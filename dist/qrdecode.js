@@ -27,8 +27,8 @@ GridSampler = {};
 
 GridSampler.checkAndNudgePoints=function( image,  points)
 		{
-			var width = qrcode.width;
-			var height = qrcode.height;
+			var width = qrdecoder.width;
+			var height = qrdecoder.height;
 			// Check and nudge points from start until we see some that are OK:
 			var nudged = true;
 			for (var offset = 0; offset < points.length && nudged; offset += 2)
@@ -118,12 +118,12 @@ GridSampler.sampleGrid3=function( image,  dimension,  transform)
 				{
 					for (var x = 0; x < max; x += 2)
 					{
-						var xpoint = (Math.floor( points[x]) * 4) + (Math.floor( points[x + 1]) * qrcode.width * 4);
-                        var bit = image[Math.floor( points[x])+ qrcode.width* Math.floor( points[x + 1])];
-						qrcode.imagedata.data[xpoint] = bit?255:0;
-						qrcode.imagedata.data[xpoint+1] = bit?255:0;
-						qrcode.imagedata.data[xpoint+2] = 0;
-						qrcode.imagedata.data[xpoint+3] = 255;
+						var xpoint = (Math.floor( points[x]) * 4) + (Math.floor( points[x + 1]) * qrdecoder.width * 4);
+                        var bit = image[Math.floor( points[x])+ qrdecoder.width* Math.floor( points[x + 1])];
+						qrdecoder.imagedata.data[xpoint] = bit?255:0;
+						qrdecoder.imagedata.data[xpoint+1] = bit?255:0;
+						qrdecoder.imagedata.data[xpoint+2] = 0;
+						qrdecoder.imagedata.data[xpoint+3] = 255;
 						//bits[x >> 1][ y]=bit;
 						if(bit)
 							bits.set_Renamed(x >> 1, y);
@@ -570,14 +570,14 @@ function Detector(image)
 				if (state == 1)
 				{
 					// In white pixels, looking for black
-					if (this.image[realX + realY*qrcode.width])
+					if (this.image[realX + realY*qrdecoder.width])
 					{
 						state++;
 					}
 				}
 				else
 				{
-					if (!this.image[realX + realY*qrcode.width])
+					if (!this.image[realX + realY*qrdecoder.width])
 					{
 						state++;
 					}
@@ -620,10 +620,10 @@ function Detector(image)
 				scale =  fromX /  (fromX - otherToX);
 				otherToX = 0;
 			}
-			else if (otherToX >= qrcode.width)
+			else if (otherToX >= qrdecoder.width)
 			{
-				scale =  (qrcode.width - 1 - fromX) /  (otherToX - fromX);
-				otherToX = qrcode.width - 1;
+				scale =  (qrdecoder.width - 1 - fromX) /  (otherToX - fromX);
+				otherToX = qrdecoder.width - 1;
 			}
 			var otherToY = Math.floor (fromY - (toY - fromY) * scale);
 			
@@ -633,10 +633,10 @@ function Detector(image)
 				scale =  fromY /  (fromY - otherToY);
 				otherToY = 0;
 			}
-			else if (otherToY >= qrcode.height)
+			else if (otherToY >= qrdecoder.height)
 			{
-				scale =  (qrcode.height - 1 - fromY) /  (otherToY - fromY);
-				otherToY = qrcode.height - 1;
+				scale =  (qrdecoder.height - 1 - fromY) /  (otherToY - fromY);
+				otherToY = qrdecoder.height - 1;
 			}
 			otherToX = Math.floor (fromX + (otherToX - fromX) * scale);
 			
@@ -707,14 +707,14 @@ function Detector(image)
 			// should be
 			var allowance = Math.floor (allowanceFactor * overallEstModuleSize);
 			var alignmentAreaLeftX = Math.max(0, estAlignmentX - allowance);
-			var alignmentAreaRightX = Math.min(qrcode.width - 1, estAlignmentX + allowance);
+			var alignmentAreaRightX = Math.min(qrdecoder.width - 1, estAlignmentX + allowance);
 			if (alignmentAreaRightX - alignmentAreaLeftX < overallEstModuleSize * 3)
 			{
 				throw "Error";
 			}
 			
 			var alignmentAreaTopY = Math.max(0, estAlignmentY - allowance);
-			var alignmentAreaBottomY = Math.min(qrcode.height - 1, estAlignmentY + allowance);
+			var alignmentAreaBottomY = Math.min(qrdecoder.height - 1, estAlignmentY + allowance);
 			
 			var alignmentFinder = new AlignmentPatternFinder(this.image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize, this.resultPointCallback);
 			return alignmentFinder.find();
@@ -2266,31 +2266,31 @@ Decoder.decode=function(bits)
 */
 
 
-qrcode = {};
-qrcode.imagedata = null;
-qrcode.width = 0;
-qrcode.height = 0;
-qrcode.qrCodeSymbol = null;
-qrcode.debug = false;
-qrcode.maxImgSize = 1024*1024;
+qrdecoder = {};
+qrdecoder.imagedata = null;
+qrdecoder.width = 0;
+qrdecoder.height = 0;
+qrdecoder.qrdeCoderSymbol = null;
+qrdecoder.debug = false;
+qrdecoder.maxImgSize = 1024*1024;
 
-qrcode.sizeOfDataLengthInfo =  [  [ 10, 9, 8, 8 ],  [ 12, 11, 16, 10 ],  [ 14, 13, 16, 12 ] ];
+qrdecoder.sizeOfDataLengthInfo =  [  [ 10, 9, 8, 8 ],  [ 12, 11, 16, 10 ],  [ 14, 13, 16, 12 ] ];
 
-qrcode.callback = null;
+qrdecoder.callback = null;
 
-qrcode.decode = function(src){
+qrdecoder.decode = function(src){
     
     if(arguments.length==0)
     {
         var canvas_qr = document.getElementById("qr-canvas");
         var context = canvas_qr.getContext('2d');
-        qrcode.width = canvas_qr.width;
-        qrcode.height = canvas_qr.height;
-        qrcode.imagedata = context.getImageData(0, 0, qrcode.width, qrcode.height);
-        qrcode.result = qrcode.process(context);
-        if(qrcode.callback!=null)
-            qrcode.callback(qrcode.result);
-        return qrcode.result;
+        qrdecoder.width = canvas_qr.width;
+        qrdecoder.height = canvas_qr.height;
+        qrdecoder.imagedata = context.getImageData(0, 0, qrdecoder.width, qrdecoder.height);
+        qrdecoder.result = qrdecoder.process(context);
+        if(qrdecoder.callback!=null)
+            qrdecoder.callback(qrdecoder.result);
+        return qrdecoder.result;
     }
     else
     {
@@ -2301,10 +2301,10 @@ qrcode.decode = function(src){
             var context = canvas_qr.getContext('2d');
             var nheight = image.height;
             var nwidth = image.width;
-            if(image.width*image.height>qrcode.maxImgSize)
+            if(image.width*image.height>qrdecoder.maxImgSize)
             {
                 var ir = image.width / image.height;
-                nheight = Math.sqrt(qrcode.maxImgSize/ir);
+                nheight = Math.sqrt(qrdecoder.maxImgSize/ir);
                 nwidth=ir*nheight;
             }
 
@@ -2312,40 +2312,40 @@ qrcode.decode = function(src){
             canvas_qr.height = nheight;
             
             context.drawImage(image, 0, 0, canvas_qr.width, canvas_qr.height );
-            qrcode.width = canvas_qr.width;
-            qrcode.height = canvas_qr.height;
+            qrdecoder.width = canvas_qr.width;
+            qrdecoder.height = canvas_qr.height;
             try{
-                qrcode.imagedata = context.getImageData(0, 0, canvas_qr.width, canvas_qr.height);
+                qrdecoder.imagedata = context.getImageData(0, 0, canvas_qr.width, canvas_qr.height);
             }catch(e){
-                qrcode.result = "Cross domain image reading not supported in your browser! Save it to your computer then drag and drop the file!";
-                if(qrcode.callback!=null)
-                    qrcode.callback(qrcode.result);
+                qrdecoder.result = "Cross domain image reading not supported in your browser! Save it to your computer then drag and drop the file!";
+                if(qrdecoder.callback!=null)
+                    qrdecoder.callback(qrdecoder.result);
                 return;
             }
             
             try
             {
-                qrcode.result = qrcode.process(context);
+                qrdecoder.result = qrdecoder.process(context);
             }
             catch(e)
             {
                 console.log(e);
-                qrcode.result = "error decoding QR Code";
+                qrdecoder.result = "error decoding QR Code";
             }
-            if(qrcode.callback!=null)
-                qrcode.callback(qrcode.result);
+            if(qrdecoder.callback!=null)
+                qrdecoder.callback(qrdecoder.result);
         }
         image.src = src;
     }
 }
 
-qrcode.isUrl = function(s)
+qrdecoder.isUrl = function(s)
 {
     var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     return regexp.test(s);
 }
 
-qrcode.decode_url = function (s)
+qrdecoder.decode_url = function (s)
 {
   var escaped = "";
   try{
@@ -2368,56 +2368,56 @@ qrcode.decode_url = function (s)
   return ret;
 }
 
-qrcode.decode_utf8 = function ( s )
+qrdecoder.decode_utf8 = function ( s )
 {
-    if(qrcode.isUrl(s))
-        return qrcode.decode_url(s);
+    if(qrdecoder.isUrl(s))
+        return qrdecoder.decode_url(s);
     else
         return s;
 }
 
-qrcode.process = function(ctx){
+qrdecoder.process = function(ctx){
     
     var start = new Date().getTime();
 
-    var image = qrcode.grayScaleToBitmap(qrcode.grayscale());
-    //var image = qrcode.binarize(128);
+    var image = qrdecoder.grayScaleToBitmap(qrdecoder.grayscale());
+    //var image = qrdecoder.binarize(128);
     
-    if(qrcode.debug)
+    if(qrdecoder.debug)
     {
-        for (var y = 0; y < qrcode.height; y++)
+        for (var y = 0; y < qrdecoder.height; y++)
         {
-            for (var x = 0; x < qrcode.width; x++)
+            for (var x = 0; x < qrdecoder.width; x++)
             {
-                var point = (x * 4) + (y * qrcode.width * 4);
-                qrcode.imagedata.data[point] = image[x+y*qrcode.width]?0:0;
-                qrcode.imagedata.data[point+1] = image[x+y*qrcode.width]?0:0;
-                qrcode.imagedata.data[point+2] = image[x+y*qrcode.width]?255:0;
+                var point = (x * 4) + (y * qrdecoder.width * 4);
+                qrdecoder.imagedata.data[point] = image[x+y*qrdecoder.width]?0:0;
+                qrdecoder.imagedata.data[point+1] = image[x+y*qrdecoder.width]?0:0;
+                qrdecoder.imagedata.data[point+2] = image[x+y*qrdecoder.width]?255:0;
             }
         }
-        ctx.putImageData(qrcode.imagedata, 0, 0);
+        ctx.putImageData(qrdecoder.imagedata, 0, 0);
     }
     
     //var finderPatternInfo = new FinderPatternFinder().findFinderPattern(image);
     
     var detector = new Detector(image);
 
-    var qRCodeMatrix = detector.detect();
+    var qRdeCoderMatrix = detector.detect();
     
-    /*for (var y = 0; y < qRCodeMatrix.bits.Height; y++)
+    /*for (var y = 0; y < qRdeCoderMatrix.bits.Height; y++)
     {
-        for (var x = 0; x < qRCodeMatrix.bits.Width; x++)
+        for (var x = 0; x < qRdeCoderMatrix.bits.Width; x++)
         {
-            var point = (x * 4*2) + (y*2 * qrcode.width * 4);
-            qrcode.imagedata.data[point] = qRCodeMatrix.bits.get_Renamed(x,y)?0:0;
-            qrcode.imagedata.data[point+1] = qRCodeMatrix.bits.get_Renamed(x,y)?0:0;
-            qrcode.imagedata.data[point+2] = qRCodeMatrix.bits.get_Renamed(x,y)?255:0;
+            var point = (x * 4*2) + (y*2 * qrdecoder.width * 4);
+            qrdecoder.imagedata.data[point] = qRdeCoderMatrix.bits.get_Renamed(x,y)?0:0;
+            qrdecoder.imagedata.data[point+1] = qRdeCoderMatrix.bits.get_Renamed(x,y)?0:0;
+            qrdecoder.imagedata.data[point+2] = qRdeCoderMatrix.bits.get_Renamed(x,y)?255:0;
         }
     }*/
-    if(qrcode.debug)
-        ctx.putImageData(qrcode.imagedata, 0, 0);
+    if(qrdecoder.debug)
+        ctx.putImageData(qrdecoder.imagedata, 0, 0);
     
-    var reader = Decoder.decode(qRCodeMatrix.bits);
+    var reader = Decoder.decode(qRdeCoderMatrix.bits);
     var data = reader.DataByte;
     var str="";
     for(var i=0;i<data.length;i++)
@@ -2430,42 +2430,42 @@ qrcode.process = function(ctx){
     var time = end - start;
     console.log(time);
     
-    return qrcode.decode_utf8(str);
+    return qrdecoder.decode_utf8(str);
     //alert("Time:" + time + " Code: "+str);
 }
 
-qrcode.getPixel = function(x,y){
-    if (qrcode.width < x) {
+qrdecoder.getPixel = function(x,y){
+    if (qrdecoder.width < x) {
         throw "point error";
     }
-    if (qrcode.height < y) {
+    if (qrdecoder.height < y) {
         throw "point error";
     }
-    point = (x * 4) + (y * qrcode.width * 4);
-    p = (qrcode.imagedata.data[point]*33 + qrcode.imagedata.data[point + 1]*34 + qrcode.imagedata.data[point + 2]*33)/100;
+    point = (x * 4) + (y * qrdecoder.width * 4);
+    p = (qrdecoder.imagedata.data[point]*33 + qrdecoder.imagedata.data[point + 1]*34 + qrdecoder.imagedata.data[point + 2]*33)/100;
     return p;
 }
 
-qrcode.binarize = function(th){
-    var ret = new Array(qrcode.width*qrcode.height);
-    for (var y = 0; y < qrcode.height; y++)
+qrdecoder.binarize = function(th){
+    var ret = new Array(qrdecoder.width*qrdecoder.height);
+    for (var y = 0; y < qrdecoder.height; y++)
     {
-        for (var x = 0; x < qrcode.width; x++)
+        for (var x = 0; x < qrdecoder.width; x++)
         {
-            var gray = qrcode.getPixel(x, y);
+            var gray = qrdecoder.getPixel(x, y);
             
-            ret[x+y*qrcode.width] = gray<=th?true:false;
+            ret[x+y*qrdecoder.width] = gray<=th?true:false;
         }
     }
     return ret;
 }
 
-qrcode.getMiddleBrightnessPerArea=function(image)
+qrdecoder.getMiddleBrightnessPerArea=function(image)
 {
     var numSqrtArea = 4;
     //obtain middle brightness((min + max) / 2) per area
-    var areaWidth = Math.floor(qrcode.width / numSqrtArea);
-    var areaHeight = Math.floor(qrcode.height / numSqrtArea);
+    var areaWidth = Math.floor(qrdecoder.width / numSqrtArea);
+    var areaHeight = Math.floor(qrdecoder.height / numSqrtArea);
     var minmax = new Array(numSqrtArea);
     for (var i = 0; i < numSqrtArea; i++)
     {
@@ -2484,7 +2484,7 @@ qrcode.getMiddleBrightnessPerArea=function(image)
             {
                 for (var dx = 0; dx < areaWidth; dx++)
                 {
-                    var target = image[areaWidth * ax + dx+(areaHeight * ay + dy)*qrcode.width];
+                    var target = image[areaWidth * ax + dx+(areaHeight * ay + dy)*qrdecoder.width];
                     if (target < minmax[ax][ay][0])
                         minmax[ax][ay][0] = target;
                     if (target > minmax[ax][ay][1])
@@ -2513,13 +2513,13 @@ qrcode.getMiddleBrightnessPerArea=function(image)
     return middle;
 }
 
-qrcode.grayScaleToBitmap=function(grayScale)
+qrdecoder.grayScaleToBitmap=function(grayScale)
 {
-    var middle = qrcode.getMiddleBrightnessPerArea(grayScale);
+    var middle = qrdecoder.getMiddleBrightnessPerArea(grayScale);
     var sqrtNumArea = middle.length;
-    var areaWidth = Math.floor(qrcode.width / sqrtNumArea);
-    var areaHeight = Math.floor(qrcode.height / sqrtNumArea);
-    var bitmap = new Array(qrcode.height*qrcode.width);
+    var areaWidth = Math.floor(qrdecoder.width / sqrtNumArea);
+    var areaHeight = Math.floor(qrdecoder.height / sqrtNumArea);
+    var bitmap = new Array(qrdecoder.height*qrdecoder.width);
     
     for (var ay = 0; ay < sqrtNumArea; ay++)
     {
@@ -2529,7 +2529,7 @@ qrcode.grayScaleToBitmap=function(grayScale)
             {
                 for (var dx = 0; dx < areaWidth; dx++)
                 {
-                    bitmap[areaWidth * ax + dx+ (areaHeight * ay + dy)*qrcode.width] = (grayScale[areaWidth * ax + dx+ (areaHeight * ay + dy)*qrcode.width] < middle[ax][ay])?true:false;
+                    bitmap[areaWidth * ax + dx+ (areaHeight * ay + dy)*qrdecoder.width] = (grayScale[areaWidth * ax + dx+ (areaHeight * ay + dy)*qrdecoder.width] < middle[ax][ay])?true:false;
                 }
             }
         }
@@ -2537,15 +2537,15 @@ qrcode.grayScaleToBitmap=function(grayScale)
     return bitmap;
 }
 
-qrcode.grayscale = function(){
-    var ret = new Array(qrcode.width*qrcode.height);
-    for (var y = 0; y < qrcode.height; y++)
+qrdecoder.grayscale = function(){
+    var ret = new Array(qrdecoder.width*qrdecoder.height);
+    for (var y = 0; y < qrdecoder.height; y++)
     {
-        for (var x = 0; x < qrcode.width; x++)
+        for (var x = 0; x < qrdecoder.width; x++)
         {
-            var gray = qrcode.getPixel(x, y);
+            var gray = qrdecoder.getPixel(x, y);
             
-            ret[x+y*qrcode.width] = gray;
+            ret[x+y*qrdecoder.width] = gray;
         }
     }
     return ret;
@@ -2599,7 +2599,7 @@ var MAX_MODULES = 57;
 var INTEGER_MATH_SHIFT = 8;
 var CENTER_QUORUM = 2;
 
-qrcode.orderBestPatterns=function(patterns)
+qrdecoder.orderBestPatterns=function(patterns)
 		{
 			
 			function distance( pattern1,  pattern2)
@@ -2766,12 +2766,12 @@ function FinderPatternFinder()
 		{
 			var image = this.image;
 			
-			var maxI = qrcode.height;
+			var maxI = qrdecoder.height;
 			var stateCount = this.CrossCheckStateCount;
 			
 			// Start counting up from center
 			var i = startI;
-			while (i >= 0 && image[centerJ + i*qrcode.width])
+			while (i >= 0 && image[centerJ + i*qrdecoder.width])
 			{
 				stateCount[2]++;
 				i--;
@@ -2780,7 +2780,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i >= 0 && !image[centerJ +i*qrcode.width] && stateCount[1] <= maxCount)
+			while (i >= 0 && !image[centerJ +i*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				i--;
@@ -2790,7 +2790,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i >= 0 && image[centerJ + i*qrcode.width] && stateCount[0] <= maxCount)
+			while (i >= 0 && image[centerJ + i*qrdecoder.width] && stateCount[0] <= maxCount)
 			{
 				stateCount[0]++;
 				i--;
@@ -2802,7 +2802,7 @@ function FinderPatternFinder()
 			
 			// Now also count down from center
 			i = startI + 1;
-			while (i < maxI && image[centerJ +i*qrcode.width])
+			while (i < maxI && image[centerJ +i*qrdecoder.width])
 			{
 				stateCount[2]++;
 				i++;
@@ -2811,7 +2811,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i < maxI && !image[centerJ + i*qrcode.width] && stateCount[3] < maxCount)
+			while (i < maxI && !image[centerJ + i*qrdecoder.width] && stateCount[3] < maxCount)
 			{
 				stateCount[3]++;
 				i++;
@@ -2820,7 +2820,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i < maxI && image[centerJ + i*qrcode.width] && stateCount[4] < maxCount)
+			while (i < maxI && image[centerJ + i*qrdecoder.width] && stateCount[4] < maxCount)
 			{
 				stateCount[4]++;
 				i++;
@@ -2844,11 +2844,11 @@ function FinderPatternFinder()
 		{
 			var image = this.image;
 			
-			var maxJ = qrcode.width;
+			var maxJ = qrdecoder.width;
 			var stateCount = this.CrossCheckStateCount;
 			
 			var j = startJ;
-			while (j >= 0 && image[j+ centerI*qrcode.width])
+			while (j >= 0 && image[j+ centerI*qrdecoder.width])
 			{
 				stateCount[2]++;
 				j--;
@@ -2857,7 +2857,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j >= 0 && !image[j+ centerI*qrcode.width] && stateCount[1] <= maxCount)
+			while (j >= 0 && !image[j+ centerI*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				j--;
@@ -2866,7 +2866,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j >= 0 && image[j+ centerI*qrcode.width] && stateCount[0] <= maxCount)
+			while (j >= 0 && image[j+ centerI*qrdecoder.width] && stateCount[0] <= maxCount)
 			{
 				stateCount[0]++;
 				j--;
@@ -2877,7 +2877,7 @@ function FinderPatternFinder()
 			}
 			
 			j = startJ + 1;
-			while (j < maxJ && image[j+ centerI*qrcode.width])
+			while (j < maxJ && image[j+ centerI*qrdecoder.width])
 			{
 				stateCount[2]++;
 				j++;
@@ -2886,7 +2886,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j < maxJ && !image[j+ centerI*qrcode.width] && stateCount[3] < maxCount)
+			while (j < maxJ && !image[j+ centerI*qrdecoder.width] && stateCount[3] < maxCount)
 			{
 				stateCount[3]++;
 				j++;
@@ -2895,7 +2895,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j < maxJ && image[j+ centerI*qrcode.width] && stateCount[4] < maxCount)
+			while (j < maxJ && image[j+ centerI*qrdecoder.width] && stateCount[4] < maxCount)
 			{
 				stateCount[4]++;
 				j++;
@@ -3085,8 +3085,8 @@ function FinderPatternFinder()
 	this.findFinderPattern = function(image){
 		var tryHarder = false;
 		this.image=image;
-		var maxI = qrcode.height;
-		var maxJ = qrcode.width;
+		var maxI = qrdecoder.height;
+		var maxJ = qrdecoder.width;
 		var iSkip = Math.floor((3 * maxI) / (4 * MAX_MODULES));
 		if (iSkip < MIN_SKIP || tryHarder)
 		{
@@ -3106,7 +3106,7 @@ function FinderPatternFinder()
 			var currentState = 0;
 			for (var j = 0; j < maxJ; j++)
 			{
-				if (image[j+i*qrcode.width] )
+				if (image[j+i*qrdecoder.width] )
 				{
 					// Black pixel
 					if ((currentState & 1) == 1)
@@ -3163,7 +3163,7 @@ function FinderPatternFinder()
 									{
 										j++;
 									}
-									while (j < maxJ && !image[j + i*qrcode.width]);
+									while (j < maxJ && !image[j + i*qrdecoder.width]);
 									j--; // back up to that last white pixel
 								}
 								// Clear state to start looking again
@@ -3213,7 +3213,7 @@ function FinderPatternFinder()
 		}
 		
 		var patternInfo = this.selectBestPatterns();
-		qrcode.orderBestPatterns(patternInfo);
+		qrdecoder.orderBestPatterns(patternInfo);
 		
 		return new FinderPatternInfo(patternInfo);
 	};
@@ -3317,7 +3317,7 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 		{
 			var image = this.image;
 			
-			var maxI = qrcode.height;
+			var maxI = qrdecoder.height;
 			var stateCount = this.crossCheckStateCount;
 			stateCount[0] = 0;
 			stateCount[1] = 0;
@@ -3325,7 +3325,7 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 			
 			// Start counting up from center
 			var i = startI;
-			while (i >= 0 && image[centerJ + i*qrcode.width] && stateCount[1] <= maxCount)
+			while (i >= 0 && image[centerJ + i*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				i--;
@@ -3335,7 +3335,7 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 			{
 				return NaN;
 			}
-			while (i >= 0 && !image[centerJ + i*qrcode.width] && stateCount[0] <= maxCount)
+			while (i >= 0 && !image[centerJ + i*qrdecoder.width] && stateCount[0] <= maxCount)
 			{
 				stateCount[0]++;
 				i--;
@@ -3347,7 +3347,7 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 			
 			// Now also count down from center
 			i = startI + 1;
-			while (i < maxI && image[centerJ + i*qrcode.width] && stateCount[1] <= maxCount)
+			while (i < maxI && image[centerJ + i*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				i++;
@@ -3356,7 +3356,7 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 			{
 				return NaN;
 			}
-			while (i < maxI && !image[centerJ + i*qrcode.width] && stateCount[2] <= maxCount)
+			while (i < maxI && !image[centerJ + i*qrdecoder.width] && stateCount[2] <= maxCount)
 			{
 				stateCount[2]++;
 				i++;
@@ -3424,14 +3424,14 @@ function AlignmentPatternFinder( image,  startX,  startY,  width,  height,  modu
 				// Burn off leading white pixels before anything else; if we start in the middle of
 				// a white run, it doesn't make sense to count its length, since we don't know if the
 				// white run continued to the left of the start point
-				while (j < maxJ && !image[j + qrcode.width* i])
+				while (j < maxJ && !image[j + qrdecoder.width* i])
 				{
 					j++;
 				}
 				var currentState = 0;
 				while (j < maxJ)
 				{
-					if (image[j + i*qrcode.width])
+					if (image[j + i*qrdecoder.width])
 					{
 						// Black pixel
 						if (currentState == 1)
@@ -3628,7 +3628,7 @@ function QRCodeDataBlockReader(blocks,  version,  numErrorCorrectionCode)
 				index++;
 			}
 			
-			return this.getNextBits(qrcode.sizeOfDataLengthInfo[this.dataLengthMode][index]);
+			return this.getNextBits(qrdecoder.sizeOfDataLengthInfo[this.dataLengthMode][index]);
 		}
 	this.getRomanAndFigureString=function( dataLength)
 		{

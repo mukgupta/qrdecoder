@@ -128,7 +128,7 @@ function QRCodeDataBlockReader(blocks,  version,  numErrorCorrectionCode)
 				index++;
 			}
 			
-			return this.getNextBits(qrcode.sizeOfDataLengthInfo[this.dataLengthMode][index]);
+			return this.getNextBits(qrdecoder.sizeOfDataLengthInfo[this.dataLengthMode][index]);
 		}
 	this.getRomanAndFigureString=function( dataLength)
 		{

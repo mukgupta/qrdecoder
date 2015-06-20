@@ -156,14 +156,14 @@ function Detector(image)
 				if (state == 1)
 				{
 					// In white pixels, looking for black
-					if (this.image[realX + realY*qrcode.width])
+					if (this.image[realX + realY*qrdecoder.width])
 					{
 						state++;
 					}
 				}
 				else
 				{
-					if (!this.image[realX + realY*qrcode.width])
+					if (!this.image[realX + realY*qrdecoder.width])
 					{
 						state++;
 					}
@@ -206,10 +206,10 @@ function Detector(image)
 				scale =  fromX /  (fromX - otherToX);
 				otherToX = 0;
 			}
-			else if (otherToX >= qrcode.width)
+			else if (otherToX >= qrdecoder.width)
 			{
-				scale =  (qrcode.width - 1 - fromX) /  (otherToX - fromX);
-				otherToX = qrcode.width - 1;
+				scale =  (qrdecoder.width - 1 - fromX) /  (otherToX - fromX);
+				otherToX = qrdecoder.width - 1;
 			}
 			var otherToY = Math.floor (fromY - (toY - fromY) * scale);
 			
@@ -219,10 +219,10 @@ function Detector(image)
 				scale =  fromY /  (fromY - otherToY);
 				otherToY = 0;
 			}
-			else if (otherToY >= qrcode.height)
+			else if (otherToY >= qrdecoder.height)
 			{
-				scale =  (qrcode.height - 1 - fromY) /  (otherToY - fromY);
-				otherToY = qrcode.height - 1;
+				scale =  (qrdecoder.height - 1 - fromY) /  (otherToY - fromY);
+				otherToY = qrdecoder.height - 1;
 			}
 			otherToX = Math.floor (fromX + (otherToX - fromX) * scale);
 			
@@ -293,14 +293,14 @@ function Detector(image)
 			// should be
 			var allowance = Math.floor (allowanceFactor * overallEstModuleSize);
 			var alignmentAreaLeftX = Math.max(0, estAlignmentX - allowance);
-			var alignmentAreaRightX = Math.min(qrcode.width - 1, estAlignmentX + allowance);
+			var alignmentAreaRightX = Math.min(qrdecoder.width - 1, estAlignmentX + allowance);
 			if (alignmentAreaRightX - alignmentAreaLeftX < overallEstModuleSize * 3)
 			{
 				throw "Error";
 			}
 			
 			var alignmentAreaTopY = Math.max(0, estAlignmentY - allowance);
-			var alignmentAreaBottomY = Math.min(qrcode.height - 1, estAlignmentY + allowance);
+			var alignmentAreaBottomY = Math.min(qrdecoder.height - 1, estAlignmentY + allowance);
 			
 			var alignmentFinder = new AlignmentPatternFinder(this.image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize, this.resultPointCallback);
 			return alignmentFinder.find();

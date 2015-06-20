@@ -19,7 +19,7 @@
 <script type="text/javascript" src="gf256poly.js"></script>
 <script type="text/javascript" src="gf256.js"></script>
 <script type="text/javascript" src="decoder.js"></script>
-<script type="text/javascript" src="qrcode.js"></script>
+<script type="text/javascript" src="qrdecoder.js"></script>
 <script type="text/javascript" src="findpat.js"></script>
 <script type="text/javascript" src="alignpat.js"></script>
 <script type="text/javascript" src="databr.js"></script>
@@ -62,7 +62,7 @@ function handleFiles(f)
 
       reader.onload = (function(theFile) {
         return function(e) {
-          qrcode.decode(e.target.result);
+          qrdecoder.decode(e.target.result);
         };
       })(f[i]);
 
@@ -78,8 +78,8 @@ function read(a)
 function load()
 {
 	initCanvas(640,480);
-	qrcode.callback = read;
-	qrcode.decode("meqrthumb.png");
+	qrdecoder.callback = read;
+	qrdecoder.decode("meqrthumb.png");
 }
 
 function initCanvas(ww,hh)
@@ -125,7 +125,7 @@ function initCanvas(ww,hh)
         function captureToCanvas() {
 		flash = document.getElementById("embedflash");
 		flash.ccCapture();
-		qrcode.decode();
+		qrdecoder.decode();
         }
 </script>
 

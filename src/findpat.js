@@ -28,7 +28,7 @@ var MAX_MODULES = 57;
 var INTEGER_MATH_SHIFT = 8;
 var CENTER_QUORUM = 2;
 
-qrcode.orderBestPatterns=function(patterns)
+qrdecoder.orderBestPatterns=function(patterns)
 		{
 			
 			function distance( pattern1,  pattern2)
@@ -195,12 +195,12 @@ function FinderPatternFinder()
 		{
 			var image = this.image;
 			
-			var maxI = qrcode.height;
+			var maxI = qrdecoder.height;
 			var stateCount = this.CrossCheckStateCount;
 			
 			// Start counting up from center
 			var i = startI;
-			while (i >= 0 && image[centerJ + i*qrcode.width])
+			while (i >= 0 && image[centerJ + i*qrdecoder.width])
 			{
 				stateCount[2]++;
 				i--;
@@ -209,7 +209,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i >= 0 && !image[centerJ +i*qrcode.width] && stateCount[1] <= maxCount)
+			while (i >= 0 && !image[centerJ +i*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				i--;
@@ -219,7 +219,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i >= 0 && image[centerJ + i*qrcode.width] && stateCount[0] <= maxCount)
+			while (i >= 0 && image[centerJ + i*qrdecoder.width] && stateCount[0] <= maxCount)
 			{
 				stateCount[0]++;
 				i--;
@@ -231,7 +231,7 @@ function FinderPatternFinder()
 			
 			// Now also count down from center
 			i = startI + 1;
-			while (i < maxI && image[centerJ +i*qrcode.width])
+			while (i < maxI && image[centerJ +i*qrdecoder.width])
 			{
 				stateCount[2]++;
 				i++;
@@ -240,7 +240,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i < maxI && !image[centerJ + i*qrcode.width] && stateCount[3] < maxCount)
+			while (i < maxI && !image[centerJ + i*qrdecoder.width] && stateCount[3] < maxCount)
 			{
 				stateCount[3]++;
 				i++;
@@ -249,7 +249,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (i < maxI && image[centerJ + i*qrcode.width] && stateCount[4] < maxCount)
+			while (i < maxI && image[centerJ + i*qrdecoder.width] && stateCount[4] < maxCount)
 			{
 				stateCount[4]++;
 				i++;
@@ -273,11 +273,11 @@ function FinderPatternFinder()
 		{
 			var image = this.image;
 			
-			var maxJ = qrcode.width;
+			var maxJ = qrdecoder.width;
 			var stateCount = this.CrossCheckStateCount;
 			
 			var j = startJ;
-			while (j >= 0 && image[j+ centerI*qrcode.width])
+			while (j >= 0 && image[j+ centerI*qrdecoder.width])
 			{
 				stateCount[2]++;
 				j--;
@@ -286,7 +286,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j >= 0 && !image[j+ centerI*qrcode.width] && stateCount[1] <= maxCount)
+			while (j >= 0 && !image[j+ centerI*qrdecoder.width] && stateCount[1] <= maxCount)
 			{
 				stateCount[1]++;
 				j--;
@@ -295,7 +295,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j >= 0 && image[j+ centerI*qrcode.width] && stateCount[0] <= maxCount)
+			while (j >= 0 && image[j+ centerI*qrdecoder.width] && stateCount[0] <= maxCount)
 			{
 				stateCount[0]++;
 				j--;
@@ -306,7 +306,7 @@ function FinderPatternFinder()
 			}
 			
 			j = startJ + 1;
-			while (j < maxJ && image[j+ centerI*qrcode.width])
+			while (j < maxJ && image[j+ centerI*qrdecoder.width])
 			{
 				stateCount[2]++;
 				j++;
@@ -315,7 +315,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j < maxJ && !image[j+ centerI*qrcode.width] && stateCount[3] < maxCount)
+			while (j < maxJ && !image[j+ centerI*qrdecoder.width] && stateCount[3] < maxCount)
 			{
 				stateCount[3]++;
 				j++;
@@ -324,7 +324,7 @@ function FinderPatternFinder()
 			{
 				return NaN;
 			}
-			while (j < maxJ && image[j+ centerI*qrcode.width] && stateCount[4] < maxCount)
+			while (j < maxJ && image[j+ centerI*qrdecoder.width] && stateCount[4] < maxCount)
 			{
 				stateCount[4]++;
 				j++;
@@ -514,8 +514,8 @@ function FinderPatternFinder()
 	this.findFinderPattern = function(image){
 		var tryHarder = false;
 		this.image=image;
-		var maxI = qrcode.height;
-		var maxJ = qrcode.width;
+		var maxI = qrdecoder.height;
+		var maxJ = qrdecoder.width;
 		var iSkip = Math.floor((3 * maxI) / (4 * MAX_MODULES));
 		if (iSkip < MIN_SKIP || tryHarder)
 		{
@@ -535,7 +535,7 @@ function FinderPatternFinder()
 			var currentState = 0;
 			for (var j = 0; j < maxJ; j++)
 			{
-				if (image[j+i*qrcode.width] )
+				if (image[j+i*qrdecoder.width] )
 				{
 					// Black pixel
 					if ((currentState & 1) == 1)
@@ -592,7 +592,7 @@ function FinderPatternFinder()
 									{
 										j++;
 									}
-									while (j < maxJ && !image[j + i*qrcode.width]);
+									while (j < maxJ && !image[j + i*qrdecoder.width]);
 									j--; // back up to that last white pixel
 								}
 								// Clear state to start looking again
@@ -642,7 +642,7 @@ function FinderPatternFinder()
 		}
 		
 		var patternInfo = this.selectBestPatterns();
-		qrcode.orderBestPatterns(patternInfo);
+		qrdecoder.orderBestPatterns(patternInfo);
 		
 		return new FinderPatternInfo(patternInfo);
 	};
